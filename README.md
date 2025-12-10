@@ -1,0 +1,1 @@
+A cidade enfrenta uma onda de carros de corrida ilegais. A polícia reforça patrulhas inteligentes com técnicas avançadas de perseguição. Cada civil tenta sobreviver o máximo possível evitando ser apanhado. Com o tempo, só os mais bem adaptados permanecem.
