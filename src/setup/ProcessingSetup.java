@@ -1,9 +1,6 @@
 package setup;
 
-//import apps.tp3.LSystemApp;
-//import apps.tp3.MandelbrotApp;
 import apps.CityFractalApp;
-import apps.tp3.MandelbrotZoomApp;
 import processing.core.PApplet;
 
 public class ProcessingSetup extends PApplet {
