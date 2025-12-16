@@ -17,21 +17,27 @@
 - [X] Criar classe `RoadNetwork`
 - [X] Detetar interseções entre `RoadSegment`
 - [X] Criar nós e arestas (grafo de estradas)
-- [ ] Funções úteis:
+- [X] Funções úteis:
     - obter estradas ligadas a um nó
     - obter direção ao longo de uma estrada
+    - Teste da Deslocação no Grafo `RoadAgent`
 
 ## Fase 4 — Agentes
-- [ ] Criar classe base `Agent` (pos, vel, acc)
-- [ ] Criar `CivilCar` (presas)
+- [X] Criar classe base `RoadCar`
+- [X] Criar `CivilCar` (presas)
     - seguir estrada
-    - evitar colisões
     - fugir da polícia
-- [ ] Criar `PoliceCar` (predadores)
+- [X] Criar `PoliceCar` (predadores)
     - patrulha
     - perseguir civis
+- [X] Melhorar aparencia dos policias (alternar a cor com periodo de 0.4s azul/vermelho, quando entra em modo preseguição)
 
 ## Fase 5 — Comportamentos Inteligentes
+- [ ] Criar Civis com velocidade pequena e randomly ir metendo eles em modo ilegal (aumentar velocidade/mudar cor)
+- [ ] Quando civis [legal] encontram a policia, param.
+- [ ] Quando civis [ilegal] encontram a policia, fogem.
+- [ ] Policia só presegue veiculos ilegais.
+- [ ] Quando um policia apanha um ilegal, ambos param por 4 seg e o ilegal muda para a cor legal e ambos voltam a andar normalmente
 - [ ] Implementar steering behaviors:
     - `seek`, `flee`, `pursuit`
     - `separation` (civis)

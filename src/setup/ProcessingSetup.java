@@ -1,8 +1,6 @@
 package setup;
 
-import apps.CarWanderApp;
-import apps.CityFractalApp;
-import apps.RoadNodesApp;
+import apps.*;
 import processing.core.PApplet;
 
 public class ProcessingSetup extends PApplet {
@@ -16,9 +14,10 @@ public class ProcessingSetup extends PApplet {
         - CityFractalApp()
         - RoadNodesApp()
         - CarWanderApp()
+        - AgentsApp()
 
         */
-        app = new CarWanderApp();
+        app = new AgentsApp();
         PApplet.main(ProcessingSetup.class.getName());
     }
 
