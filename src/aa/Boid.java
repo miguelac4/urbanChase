@@ -96,7 +96,7 @@ public class Boid extends Body {
         p.rotate(-vel.heading());
         p.fill(col);
         p.stroke(0);
-        p.shape(shape);
+        p.triangle(12, 0, -6, 6, -6, -6);
         p.popStyle();
         p.popMatrix();
     }

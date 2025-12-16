@@ -1,5 +1,6 @@
 package setup;
 
+import apps.AgentsApp;
 import apps.CarWanderApp;
 import apps.CityFractalApp;
 import apps.RoadNodesApp;
@@ -16,6 +17,7 @@ public class ProcessingSetup extends PApplet {
         - CityFractalApp()
         - RoadNodesApp()
         - CarWanderApp()
+        - AgentsApp()
 
         */
         app = new CarWanderApp();
