@@ -25,6 +25,10 @@ public abstract class RoadAgent extends Boid {
 
     protected int prevNodeId = -1; // Guardar ultimo nó em memoria
 
+    protected float stopTimer = 0f;      // segundos restantes parado
+    protected boolean isStopped = false; // estado (opcional, mas útil)
+
+
     public RoadAgent(RoadNetwork net, int startNodeId, int color, float radiusWorld, PApplet p, SubPlot plt) {
         super(
                 net.nodes.get(startNodeId).pos.copy(),
@@ -49,6 +53,19 @@ public abstract class RoadAgent extends Boid {
     public void setSpeed(float s) { this.speed = s; }
 
     public void update(float dt, List<CivilCar> civils, List<PoliceCar> polices) {
+
+        // --- se estiver parado, só conta o tempo e não avança no grafo ---
+        if (stopTimer > 0f) {
+            stopTimer -= dt;
+            if (stopTimer <= 0f) {
+                stopTimer = 0f;
+                isStopped = false;
+            }
+            // mantém-se no mesmo ponto (não mexe em t/current/next)
+            setVel(new PVector(0, 0));
+            return;
+        }
+
         Node a = net.nodes.get(currentNodeId);
         Node b = net.nodes.get(nextNodeId);
 
@@ -58,7 +75,6 @@ public abstract class RoadAgent extends Boid {
         t += (dt * speed) / segLen;
 
         if (t >= 1f) {
-            // chegou ao nó destino
             t = 0f;
             prevNodeId = currentNodeId;
             currentNodeId = nextNodeId;
@@ -67,6 +83,7 @@ public abstract class RoadAgent extends Boid {
 
         updatePoseFromSegment();
     }
+
 
     protected void chooseNextNode() {
         nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
@@ -102,11 +119,6 @@ public abstract class RoadAgent extends Boid {
         return pick;
     }
 
-    protected float distToNode(int nodeId, PVector pos) {
-        PVector npos = net.nodes.get(nodeId).pos;
-        return PVector.dist(npos, pos);
-    }
-
     protected int randomNeighborPreferLonger(int nodeId, float minLen) {
         var nbs = net.neighbors(nodeId);
         if (nbs.isEmpty()) return nodeId;
@@ -123,5 +135,18 @@ public abstract class RoadAgent extends Boid {
         if (candidates.isEmpty()) return randomNeighbor(nodeId);
         return candidates.get(rng.nextInt(candidates.size()));
     }
+
+    public void stopFor(float seconds) {
+        stopTimer = Math.max(stopTimer, seconds);
+        isStopped = true;
+
+        // para visualmente (opcional)
+        setVel(new PVector(0, 0));
+    }
+
+    public boolean isStopped() {
+        return stopTimer > 0f;
+    }
+
 
 }

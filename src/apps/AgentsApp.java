@@ -41,8 +41,8 @@ public class AgentsApp implements IProcessingApp {
     private ArrayList<CivilCar> civils;
     private ArrayList<PoliceCar> polices;
 
-    private int numCivils = 7;
-    private int numPolices = 2;
+    private int numCivils = 20;
+    private int numPolices = 5;
 
     private int captures = 0; // opcional (vamos usar já)
 
@@ -118,8 +118,6 @@ public class AgentsApp implements IProcessingApp {
                 int start = (int) p.random(net.nodes.size());
                 CivilCar c = new CivilCar(net, start, p.color(0, 200, 0), p, plt);
                 // opcional: genes básicos
-                c.visionRadius = 2.0f;
-                c.separationRadius = 0.7f;
                 civils.add(c);
             }
 
@@ -127,7 +125,6 @@ public class AgentsApp implements IProcessingApp {
             for (int i = 0; i < numPolices; i++) {
                 int start = (int) p.random(net.nodes.size());
                 PoliceCar pc = new PoliceCar(net, start, p.color(0, 205, 255), p, plt);
-                pc.visionRadius = 2.0f;
                 polices.add(pc);
             }
 

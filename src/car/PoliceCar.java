@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PoliceCar extends RoadAgent {
 
-    public float visionRadius = 3.0f;
+    public float visionRadius = 2.0f;
 
     private boolean pursuing = false;
     private float sirenTimer = 0f;
@@ -21,9 +21,15 @@ public class PoliceCar extends RoadAgent {
     private final int sirenRed;    // vermelho sirene
     private boolean sirenBlueOn = true;
 
+    private CivilCar currentTarget = null;
+    public float captureRadius = 0.25f; // distância em unidades do mundo (ajusta)
+
+    public float normalSpeed = 0.8f;
+    public float pursuingSpeed = 2.0f;
+
     public PoliceCar(RoadNetwork net, int startNodeId, int color, PApplet p, SubPlot plt) {
         super(net, startNodeId, color, 0.13f, p, plt);
-        this.speed = 2.0f;
+        this.speed = normalSpeed;
 
         this.baseColor = color;
         this.sirenBlue = p.color(0, 80, 255);
@@ -32,15 +38,44 @@ public class PoliceCar extends RoadAgent {
 
     @Override
     public void update(float dt, List<CivilCar> civils, List<PoliceCar> polices) {
-        // 1) atualiza estado de perseguição (tem alvo?)
-        pursuing = hasTargetInRange(civils);
 
-        // 2) atualiza sirene (cor)
+        // se estiver parado (ex.: captura), deixa o RoadAgent tratar do timer
+        // mas queremos manter cor normal quando parado
+        if (isStopped()) {
+            setColor(baseColor);
+            super.update(dt, civils, polices);
+            return;
+        }
+
+        // escolhe alvo ilegal mais próximo dentro da visão
+        currentTarget = findNearestIllegalInRange(civils);
+
+        pursuing = (currentTarget != null);
+
+        // ajusta velocidade conforme o estado
+        this.speed = pursuing ? pursuingSpeed : normalSpeed;
+
+
+        // sirene só em perseguição
         updateSiren(dt);
 
-        // 3) movimento normal on-rails
+        // se estiver perto o suficiente -> captura
+        if (currentTarget != null) {
+            float d = PVector.dist(getPos(), currentTarget.getPos());
+            if (d <= captureRadius) {
+                // ambos param 4s e o civil volta a legal
+                this.stopFor(4f);
+                currentTarget.stopFor(4f);
+                currentTarget.setState(CivilCar.CivilState.LEGAL);
+                currentTarget = null;
+                pursuing = false;
+            }
+        }
+
+        // movimento na rede
         super.update(dt, civils, polices);
     }
+
 
     private boolean hasTargetInRange(List<CivilCar> civils) {
         if (civils == null || civils.isEmpty()) return false;
@@ -75,42 +110,32 @@ public class PoliceCar extends RoadAgent {
 
     @Override
     protected void chooseNextNode(List<CivilCar> civils, List<PoliceCar> polices) {
-        if (civils == null || civils.isEmpty()) {
-            nextNodeId = randomNeighbor(currentNodeId);
+
+        // se não há alvo ilegal → patrulha
+        if (currentTarget == null) {
+            nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
             return;
         }
 
-        // alvo = civil mais próximo (dentro da visão)
-        CivilCar target = null;
-        float bestD = Float.POSITIVE_INFINITY;
-        PVector myPos = getPos();
-
-        for (CivilCar c : civils) {
-            float d = PVector.dist(myPos, c.getPos());
-            if (d < bestD) { bestD = d; target = c; }
-        }
-
-        if (target == null || bestD > visionRadius) {
-            // patrulha
-            nextNodeId = randomNeighbor(currentNodeId);
-            return;
-        }
-
-        // perseguir: escolher vizinho que MINIMIZA distância ao alvo
+        // perseguir: escolher vizinho que minimiza distância ao alvo
         int bestNode = -1;
         float bestScore = Float.POSITIVE_INFINITY;
 
         for (int nb : net.neighbors(currentNodeId)) {
             if (nb == prevNodeId) continue;
-            float score = PVector.dist(net.nodes.get(nb).pos, target.getPos());
+
+            float score = PVector.dist(net.nodes.get(nb).pos, currentTarget.getPos());
             if (score < bestScore) {
                 bestScore = score;
                 bestNode = nb;
             }
         }
 
-        nextNodeId = (bestNode != -1) ? bestNode : randomNeighbor(currentNodeId);
+        nextNodeId = (bestNode != -1)
+                ? bestNode
+                : randomNeighborPreferLonger(currentNodeId, 0.20f);
     }
+
 
     @Override
     public void display(PApplet p, SubPlot plt) {
@@ -133,5 +158,30 @@ public class PoliceCar extends RoadAgent {
 
         p.popStyle();
     }
+    private CivilCar findNearestIllegalInRange(List<CivilCar> civils) {
+        if (civils == null || civils.isEmpty()) return null;
+
+        CivilCar best = null;
+        float bestD = Float.POSITIVE_INFINITY;
+        PVector myPos = getPos();
+
+        for (CivilCar c : civils) {
+            if (!c.isIllegal()) continue; // 👈 só ilegais
+            float d = PVector.dist(myPos, c.getPos());
+            if (d < bestD) {
+                bestD = d;
+                best = c;
+            }
+        }
+
+        if (best == null) return null;
+        return (bestD <= visionRadius) ? best : null;
+    }
+
+    public boolean isPursuing() {
+        return pursuing;
+    }
+
+
 
 }
