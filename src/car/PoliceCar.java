@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PoliceCar extends RoadAgent {
 
-    public float visionRadius = 3.0f;
+    public float visionRadius = 2.0f;
 
     private boolean pursuing = false;
     private float sirenTimer = 0f;
