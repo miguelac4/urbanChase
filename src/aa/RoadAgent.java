@@ -1,5 +1,7 @@
 package aa;
 
+import car.CivilCar;
+import car.PoliceCar;
 import city.Node;
 import city.RoadNetwork;
 import processing.core.PApplet;

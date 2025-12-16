@@ -1,7 +1,7 @@
 package apps;
 
-import aa.CivilCar;
-import aa.PoliceCar;
+import car.CivilCar;
+import car.PoliceCar;
 import city.Node;
 import city.RoadNetwork;
 import city.RoadSegment;
@@ -41,7 +41,7 @@ public class AgentsApp implements IProcessingApp {
     private ArrayList<CivilCar> civils;
     private ArrayList<PoliceCar> polices;
 
-    private int numCivils = 25;
+    private int numCivils = 7;
     private int numPolices = 2;
 
     private int captures = 0; // opcional (vamos usar já)
@@ -126,8 +126,8 @@ public class AgentsApp implements IProcessingApp {
             // polícias
             for (int i = 0; i < numPolices; i++) {
                 int start = (int) p.random(net.nodes.size());
-                PoliceCar pc = new PoliceCar(net, start, p.color(0, 0, 255), p, plt);
-                pc.visionRadius = 3.0f;
+                PoliceCar pc = new PoliceCar(net, start, p.color(0, 205, 255), p, plt);
+                pc.visionRadius = 2.0f;
                 polices.add(pc);
             }
 
