@@ -1,6 +1,8 @@
 package setup;
 
+import apps.CarWanderApp;
 import apps.CityFractalApp;
+import apps.RoadNodesApp;
 import processing.core.PApplet;
 
 public class ProcessingSetup extends PApplet {
@@ -11,14 +13,12 @@ public class ProcessingSetup extends PApplet {
         /*
 
         Definir aplicação para correr:
-        - SolarSystemApp()
-        - ParticleSystemApp()
-        - BoidApp()
-        - BoidWanderApp()
-        - FlockAppE()
+        - CityFractalApp()
+        - RoadNodesApp()
+        - CarWanderApp()
 
         */
-        app = new CityFractalApp();
+        app = new CarWanderApp();
         PApplet.main(ProcessingSetup.class.getName());
     }
 

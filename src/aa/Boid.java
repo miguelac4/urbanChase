@@ -11,7 +11,7 @@ public class Boid extends Body {
 
     private SubPlot plt;
     private PShape shape;
-    private float maxSpeed = 4.0f;
+    protected float maxSpeed = 4.0f;
     boolean isStopped = false;
     private int col;  // cor atual do boid
 
@@ -105,4 +105,8 @@ public class Boid extends Body {
     public PVector getVel(){ return vel.copy(); }
     public void setPos(PVector p){ this.pos.set(p); }
     public void setVel(PVector v){ this.vel.set(v); }
+
+    // Permitar que a variavel maxSpeed seja manipulada
+    public void setMaxSpeed(float v) { maxSpeed = v; }
+    public float getMaxSpeed() { return maxSpeed; }
 }
