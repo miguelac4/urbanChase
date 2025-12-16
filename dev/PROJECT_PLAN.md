@@ -9,14 +9,14 @@
 - [X] Desenhar duas redes de estradas (duas turtles com diferentes posições/orientações)
 
 ## Fase 2 — Estruturas das Estradas
-- [ ] Criar classe `RoadSegment` (start, end)
-- [ ] Modificar Turtle para guardar cada segmento desenhado
-- [ ] Criar lista `roads` com todos os segmentos da cidade
+- [X] Criar classe `RoadSegment` (start, end)
+- [X] Modificar Turtle para guardar cada segmento desenhado
+- [X] Criar lista `roads` com todos os segmentos da cidade
 
 ## Fase 3 — Rede Viária (Grafo)
-- [ ] Criar classe `RoadNetwork`
-- [ ] Detetar interseções entre `RoadSegment`
-- [ ] Criar nós e arestas (grafo de estradas)
+- [X] Criar classe `RoadNetwork`
+- [X] Detetar interseções entre `RoadSegment`
+- [X] Criar nós e arestas (grafo de estradas)
 - [ ] Funções úteis:
     - obter estradas ligadas a um nó
     - obter direção ao longo de uma estrada
