@@ -41,8 +41,8 @@ public class AgentsApp implements IProcessingApp {
     private ArrayList<CivilCar> civils;
     private ArrayList<PoliceCar> polices;
 
-    private int numCivils = 7;
-    private int numPolices = 2;
+    private int numCivils = 20;
+    private int numPolices = 5;
 
     private int captures = 0; // opcional (vamos usar já)
 
