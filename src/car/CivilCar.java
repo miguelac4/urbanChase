@@ -116,17 +116,6 @@ public class CivilCar extends RoadAgent {
 
             float score = PVector.dist(net.nodes.get(nb).pos, nearest.getPos());
 
-            // evitar congestionamento (separation simples)
-            if (civils != null) {
-                for (CivilCar other : civils) {
-                    if (other == this) continue;
-                    float d = PVector.dist(net.nodes.get(nb).pos, other.getPos());
-                    if (d < separationRadius) {
-                        score -= (separationRadius - d) * 2f;
-                    }
-                }
-            }
-
             if (score > bestScore) {
                 bestScore = score;
                 bestNode = nb;

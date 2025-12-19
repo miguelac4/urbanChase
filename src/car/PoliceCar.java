@@ -166,7 +166,7 @@ public class PoliceCar extends RoadAgent {
         PVector myPos = getPos();
 
         for (CivilCar c : civils) {
-            if (!c.isIllegal()) continue; // 👈 só ilegais
+            if (!c.isIllegal()) continue; // só ilegais
             float d = PVector.dist(myPos, c.getPos());
             if (d < bestD) {
                 bestD = d;
