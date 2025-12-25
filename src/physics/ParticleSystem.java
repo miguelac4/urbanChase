@@ -15,17 +15,31 @@ public class ParticleSystem extends Mover{
     private float lifetime;
     private PVector particleSpeed;
 
+    private PVector emitDir = new PVector(1, 0); // default
+    private boolean emitting = true;
+
     public ParticleSystem(PVector pos, PVector vel, float mass, float radius, int particleColor, float lifetime, PVector particleSpeed) {
         super(pos, vel, mass, radius);
         this.particleColor = particleColor;
         this.lifetime = lifetime;
         this.particleSpeed = particleSpeed;
-        this.particles = new ArrayList<Particle>();
+        this.particles = new ArrayList<>();
     }
 
+    public void setEmitting(boolean emitting) {
+        this.emitting = emitting;
+    }
+
+    public void setEmitDir(PVector dir) {
+        if (dir != null && dir.mag() > 1e-6f) this.emitDir = dir.copy().normalize();
+    }
+
+    @Override
     public void move(float dt){
         super.move(dt);
-        addParticle();
+
+        if (emitting) addParticle();
+
         Iterator<Particle> iterator = particles.iterator();
         while(iterator.hasNext()){
             Particle p = iterator.next();
@@ -46,19 +60,27 @@ public class ParticleSystem extends Mover{
     }
 
     private void addParticle(){
-        float vx = (float) (particleSpeed.x * (Math.random() - 0.5));
-        float vy = (float) (particleSpeed.y * (Math.random() - 0.5));
-        Particle particle = new Particle(pos, new PVector(vx, vy), radius, particleColor, lifetime);
+        // vetor de direção para as particulas
+        PVector dir = emitDir.copy();
+
+        // vetor perpendicular para dar spray
+        PVector perp = new PVector(-dir.y, dir.x);
+
+        // intensidade do envio de particulas
+        float jet = (float)(0.6 + 0.4 * Math.random()) * particleSpeed.x;
+
+        // espalhamento lateral
+        float spread = (float)((Math.random() - 0.5) * particleSpeed.y);
+
+        PVector v = PVector.add(PVector.mult(dir, jet), PVector.mult(perp, spread));
+
+        Particle particle = new Particle(pos.copy(), v, radius, particleColor, lifetime);
         particles.add(particle);
     }
 
     public void display(PApplet p, SubPlot plt){
 
-        Iterator<Particle> iterator = particles.iterator();
-        while(iterator.hasNext()) {
-            Particle particle = iterator.next();
-            particle.display(p, plt);
-        }
+        for (Particle particle : particles) particle.display(p, plt);
 
 
 //            for(Particle particle : particles){
