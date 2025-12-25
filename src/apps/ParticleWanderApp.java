@@ -1,5 +1,6 @@
 package apps;
 
+import aa.ParticleWanderAgent;
 import city.Node;
 import city.RoadNetwork;
 import city.RoadSegment;
@@ -10,12 +11,11 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
 import tools.SubPlot;
-import aa.WanderAgent;
 
 
 import java.util.ArrayList;
 
-public class CarWanderApp implements IProcessingApp {
+public class ParticleWanderApp implements IProcessingApp {
 
     private SubPlot plt;
     private double[] window = {-2, 2, -2, 2};
@@ -38,7 +38,7 @@ public class CarWanderApp implements IProcessingApp {
     private float angle = (float)(Math.PI / 2);
     private int nGenerations = 4;
 
-    private WanderAgent car;
+    private ParticleWanderAgent car;
 
     private double[] fullWindow;
     private float zoomFactor = 0.25f; // zoom
@@ -91,19 +91,10 @@ public class CarWanderApp implements IProcessingApp {
 
             fitWindowToNetwork(p, 0.08f); // margem
 
-            float minX=1e9f, maxX=-1e9f, minY=1e9f, maxY=-1e9f;
-            for (Node n : net.nodes) {
-                minX = Math.min(minX, n.pos.x);
-                maxX = Math.max(maxX, n.pos.x);
-                minY = Math.min(minY, n.pos.y);
-                maxY = Math.max(maxY, n.pos.y);
-            }
-            System.out.println("x[" + minX + "," + maxX + "] y[" + minY + "," + maxY + "]");
-
 
             // Criar o carro
             int start = (int) p.random(net.nodes.size());
-            car = new WanderAgent(net, start, p.color(0, 80, 255), p, plt);
+            car = new ParticleWanderAgent(net, start, p.color(0, 80, 255), p, plt);
 
 
             System.out.println("Segmentos: " + roads.size() + " Nós: " + net.nodes.size());
@@ -122,22 +113,11 @@ public class CarWanderApp implements IProcessingApp {
             p.line(a[0], a[1], b[0], b[1]);
         }
 
-        p.noStroke();
-        p.fill(255, 0, 0);
-        for (Node n : net.nodes) {
-            float[] pp = plt.getPixelCoord(n.pos.x, n.pos.y);
-            p.circle(pp[0], pp[1], 4);
-        }
-
         if (car != null) {
             car.update(dt);
-
-            // Desenhar carro
-            PVector cp = car.getPos();
-
-
             car.display(p, plt);
 
+            PVector cp = car.getPos();
             p.fill(0);
             p.text("car world: " + cp.x + ", " + cp.y, 10, 40);
         }
@@ -177,10 +157,6 @@ public class CarWanderApp implements IProcessingApp {
 
     @Override public void mouseReleased(PApplet p) {}
     @Override public void mouseDragged(PApplet p) {}
-
-    public ArrayList<RoadSegment> getRoads() {
-        return roads;
-    }
 
     private void fitWindowToNetwork(PApplet p, float margin) {
         float minX=1e9f, maxX=-1e9f, minY=1e9f, maxY=-1e9f;
