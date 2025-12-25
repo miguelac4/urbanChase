@@ -21,18 +21,17 @@ public abstract class RoadAgent extends Boid {
     protected int nextNodeId;
     protected int prevNodeId = -1;
 
-    // “speed” continua a ser o teu valor de cruzeiro (mundo/unidade por segundo)
+    // velocidade (mundo/unidade por segundo)
     protected float speed = 1.5f;
 
     // steering (Reynolds)
-    protected float maxForce = 4.0f;        // ajusta: menor = mais suave
-    protected float arriveRadius = 0.12f;   // distância para “cheguei ao nó”
-    protected float slowRadius = 0.60f;     // começa a abrandar antes de chegar
+    protected float maxForce = 4.0f;        // força
+    protected float arriveRadius = 0.12f;   // distância de chegada
+    protected float slowRadius = 0.60f;     // abrandar
 
-    // snap à estrada
+    // snap para colar à estrada
     protected float roadSnapStrength = 1.0f;
 
-    // stop / timers
     protected float stopTimer = 0f;
 
     public RoadAgent(RoadNetwork net, int startNodeId, int color, float radiusWorld, PApplet p, SubPlot plt) {
@@ -50,24 +49,21 @@ public abstract class RoadAgent extends Boid {
         this.net = net;
         this.currentNodeId = startNodeId;
 
-        // define maxSpeed do Boid com base no “speed”
         setMaxSpeed(speed);
 
-        // escolhe 1º destino
+        // escolher o 1o destino
         this.nextNodeId = startNodeId;
         chooseNextNode();
     }
 
     public void setSpeed(float s) {
         this.speed = s;
-        setMaxSpeed(s); // importante: o steering usa maxSpeed do Boid
+        setMaxSpeed(s); // steering usa maxSpeed do Boid
     }
 
     public void stopFor(float seconds) {
         stopTimer = Math.max(stopTimer, seconds);
         setVel(new PVector(0, 0));
-        // se quiseres mesmo travar “duro”, também podes zerar acc:
-        // acc.set(0,0); (acc é protected em Mover)
     }
 
     public boolean isStopped() {
@@ -87,11 +83,11 @@ public abstract class RoadAgent extends Boid {
         Node a = net.nodes.get(currentNodeId);
         Node b = net.nodes.get(nextNodeId);
 
-        // steering para o nó destino (arrive)
+        // steering para o nó destino
         PVector steer = arrive(b.pos);
         applyForce(steer);
 
-        // mover com a fisica
+        // mover
         move(dt);
 
         // força adicional para o segmento da estrada
@@ -100,7 +96,7 @@ public abstract class RoadAgent extends Boid {
         PVector roadForce = offset.mult(maxForce * roadSnapStrength);
         applyForce(roadForce);
 
-        // --- chegou ao nó destino? troca de segmento ---
+        // quando chegou ao nó destino, troca de segmento
         float dToB = PVector.dist(getPos(), b.pos);
         if (dToB <= arriveRadius) {
             prevNodeId = currentNodeId;
@@ -109,12 +105,12 @@ public abstract class RoadAgent extends Boid {
         }
     }
 
-    // default (patrulha/aleatório)
+    // default (patrulhamento aleatorio)
     protected void chooseNextNode() {
         nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
     }
 
-    // cada agente implementa esta decisão
+    // funcao de decisao dos agentes
     protected abstract void chooseNextNode(List<CivilCar> civils, List<PoliceCar> polices);
 
     protected PVector arrive(PVector target) {
@@ -167,7 +163,7 @@ public abstract class RoadAgent extends Boid {
         return candidates.get(rng.nextInt(candidates.size()));
     }
 
-    // ponto mais próximo de P no segmento AB
+    // retorna ponto mais próximo de P num segmento AB
     private PVector closestPointOnSegment(PVector p, PVector a, PVector b) {
         PVector ab = PVector.sub(b, a);
         float ab2 = ab.dot(ab);
