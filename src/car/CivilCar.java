@@ -28,6 +28,11 @@ public class CivilCar extends RoadAgent {
     private final Random r = new Random();
     public float chanceIllegalPerSecond = 0.03f;
 
+    // Ilegal durante x segundos
+    private float illegalTimer = 0f;        // currentTime
+    private float illegalDuration = 0f;     // random (60..90)
+    private boolean revertPending = false;  // duracao acabou mas encontra-se em fuga
+
     public CivilCar(RoadNetwork net, int startNodeId, int color, PApplet p, SubPlot plt) {
         super(net, startNodeId, color, 0.11f, p, plt);
 
@@ -48,9 +53,17 @@ public class CivilCar extends RoadAgent {
         if (state == CivilState.LEGAL) {
             setColor(colorLegal);
             setSpeed(speedLegal);
+
+            illegalTimer = 0f;
+            illegalDuration = 0f;
+            revertPending = false;
         } else {
             setColor(colorIlegal);
             setSpeed(speedIlegal);
+
+            illegalTimer = 0f;
+            illegalDuration = 60f + r.nextFloat() * 30f; // 60–90s
+            revertPending = false;
         }
     }
 
@@ -59,6 +72,28 @@ public class CivilCar extends RoadAgent {
         // aleatoriamente virar ilegal se não houver policia por perto
         if (state == CivilState.LEGAL && !hasPoliceInRadius(polices, visionRadius) && r.nextFloat() < chanceIllegalPerSecond * dt) {
             setState(CivilState.ILEGAL);
+        }
+
+        // Contar o tempo para voltar a legal
+        if (state == CivilState.ILEGAL) {
+            illegalTimer += dt;
+
+            boolean policeNear = hasPoliceInRadius(polices, visionRadius);
+
+            if (illegalTimer >= illegalDuration) {
+                if (!policeNear) {
+                    // volta para legal
+                    setState(CivilState.LEGAL);
+                } else {
+                    // expirou o tempo mas encontra-se em fuga
+                    revertPending = true; // marca a variavel booleana para voltar para legal quando terminar a fuga
+                }
+            }
+
+            // acabou a fuga, volta a legal
+            if (revertPending && !policeNear) {
+                setState(CivilState.LEGAL);
+            }
         }
 
         // movimento normal na rede
@@ -76,8 +111,10 @@ public class CivilCar extends RoadAgent {
         //    return;
         //}
 
+        boolean policeNear = hasPoliceInRadius(polices, visionRadius);
+
         // Se não há policia perto -> comportamento normal (evita calcular nearest sempre)
-        if (!hasPoliceInRadius(polices, visionRadius)) {
+        if (!policeNear) {
             if (state == CivilState.ILEGAL) setColor(colorIlegal); // ilegal “calmo”
             nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
             return;
