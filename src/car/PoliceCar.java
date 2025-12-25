@@ -12,6 +12,7 @@ public class PoliceCar extends RoadAgent {
 
     public float visionRadius = 2.0f;
 
+    // estado booleano definido pela variavel pursuing
     private boolean pursuing = false;
     private float sirenTimer = 0f;
     private final float sirenPeriod = 0.4f; // segundos
@@ -39,8 +40,7 @@ public class PoliceCar extends RoadAgent {
     @Override
     public void update(float dt, List<CivilCar> civils, List<PoliceCar> polices) {
 
-        // se estiver parado (ex.: captura), deixa o RoadAgent tratar do timer
-        // mas queremos manter cor normal quando parado
+        // se estiver parado
         if (isStopped()) {
             setColor(baseColor);
             super.update(dt, civils, polices);
@@ -59,7 +59,7 @@ public class PoliceCar extends RoadAgent {
         // sirene só em perseguição
         updateSiren(dt);
 
-        // se estiver perto o suficiente -> captura
+        // se estiver perto o suficiente captura o agente civil
         if (currentTarget != null) {
             float d = PVector.dist(getPos(), currentTarget.getPos());
             if (d <= captureRadius) {
@@ -76,30 +76,16 @@ public class PoliceCar extends RoadAgent {
         super.update(dt, civils, polices);
     }
 
-
-    private boolean hasTargetInRange(List<CivilCar> civils) {
-        if (civils == null || civils.isEmpty()) return false;
-
-        PVector myPos = getPos();
-        float bestD = Float.POSITIVE_INFINITY;
-
-        for (CivilCar c : civils) {
-            float d = PVector.dist(myPos, c.getPos());
-            if (d < bestD) bestD = d;
-        }
-        return bestD <= visionRadius;
-    }
-
     private void updateSiren(float dt) {
         if (!pursuing) {
-            // modo patrulha: cor fixa
+            // modo patrulha cor fixa
             setColor(baseColor);
             sirenTimer = 0f;
             sirenBlueOn = true;
             return;
         }
 
-        // modo perseguição: alternar azul/vermelho
+        // modo perseguição alternar entre azul e vermelho
         sirenTimer += dt;
         if (sirenTimer >= sirenPeriod) {
             sirenTimer -= sirenPeriod;
@@ -108,6 +94,7 @@ public class PoliceCar extends RoadAgent {
         setColor(sirenBlueOn ? sirenBlue : sirenRed);
     }
 
+    // COMPORTAMENTOS
     @Override
     protected void chooseNextNode(List<CivilCar> civils, List<PoliceCar> polices) {
 
@@ -117,7 +104,8 @@ public class PoliceCar extends RoadAgent {
             return;
         }
 
-        // perseguir: escolher vizinho que minimiza distância ao alvo
+        // perseguição
+        // escolher vizinho que minimiza distância ao alvo
         int bestNode = -1;
         float bestScore = Float.POSITIVE_INFINITY;
 
@@ -137,25 +125,20 @@ public class PoliceCar extends RoadAgent {
     }
 
 
+    // Implementamos um overite do display para mostrar o raio de visão do agente da policia
     @Override
     public void display(PApplet p, SubPlot plt) {
         // desenhar o carro (triângulo)
         super.display(p, plt);
 
-        // desenhar círculo do raio de visão (em unidades do mundo -> pixels)
+        // desenhar círculo do raio de visão
         p.pushStyle();
         p.noFill();
-
         float[] pp = plt.getPixelCoord(getPos().x, getPos().y);
         float[] rr = plt.getDimInPixel(visionRadius, visionRadius);
-
-        // opcional: só mostrar quando está em perseguição
-        // if (!pursuing) { p.popStyle(); return; }
-
         p.stroke(0, 0, 0, 90);
         p.strokeWeight(1);
         p.circle(pp[0], pp[1], 2 * rr[0]);
-
         p.popStyle();
     }
     private CivilCar findNearestIllegalInRange(List<CivilCar> civils) {

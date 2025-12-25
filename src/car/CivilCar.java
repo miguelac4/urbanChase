@@ -14,9 +14,8 @@ public class CivilCar extends RoadAgent {
     public enum CivilState { LEGAL, ILEGAL }
 
     public float visionRadius = 1.0f;
-    public float separationRadius = 0.6f;
 
-    // --- estados/velocidades/cores ---
+    // estado do agente (cor; velocidade; comportamento)
     public CivilState state = CivilState.LEGAL;
 
     private final int colorLegal;
@@ -57,23 +56,25 @@ public class CivilCar extends RoadAgent {
 
     @Override
     public void update(float dt, List<CivilCar> civils, List<PoliceCar> polices) {
-        // 1) aleatoriamente virar ilegal
+        // aleatoriamente virar ilegal se não houver policia por perto
         if (state == CivilState.LEGAL && !hasPoliceInRadius(polices, visionRadius) && r.nextFloat() < chanceIllegalPerSecond * dt) {
             setState(CivilState.ILEGAL);
         }
 
-        // 2) movimento normal na rede
+        // movimento normal na rede
         super.update(dt, civils, polices);
     }
 
+    // COMPORTAMENTOS
     @Override
     protected void chooseNextNode(List<CivilCar> civils, List<PoliceCar> polices) {
 
-        // Se não houver policias -> andar aleatório
-        if (polices == null || polices.isEmpty()) {
-            nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
-            return;
-        }
+        // Se não houver policias na cidade -> andar aleatório
+        // Usar caso seja necessario evitar erros que envolvam null de policias
+        //if (polices == null || polices.isEmpty()) {
+        //    nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
+        //    return;
+        //}
 
         // Se não há policia perto -> comportamento normal (evita calcular nearest sempre)
         if (!hasPoliceInRadius(polices, visionRadius)) {
@@ -82,21 +83,21 @@ public class CivilCar extends RoadAgent {
             return;
         }
 
-        // encontrar polícia mais próxima (já sabemos que existe pelo menos uma no raio)
+        // se houver pelo menos um policia no raio -> encontrar polícia mais próxima
         PoliceCar nearest = getNearestPolice(polices);
         float bestD = (nearest == null) ? Float.POSITIVE_INFINITY : PVector.dist(getPos(), nearest.getPos());
 
-        // --- CIVIL LEGAL ---
+        // CIVIL LEGAL
         if (state == CivilState.LEGAL) {
             if (nearest != null && nearest.isPursuing() && bestD <= visionRadius) {
-                // polícia perto (com sirenes) → pára
+                // polícia em perseguição perto → pára
                 stopFor(1.5f);
             }
             nextNodeId = randomNeighborPreferLonger(currentNodeId, 0.20f);
             return;
         }
 
-        // --- CIVIL ILEGAL ---
+        // CIVIL ILEGAL
         // Se a polícia afinal já não estiver perto (redundante/seguro)
         if (nearest == null || bestD > visionRadius) {
             setColor(colorIlegal);
@@ -107,7 +108,7 @@ public class CivilCar extends RoadAgent {
         // polícia perto -> fugir (laranja)
         setColor(colorScape);
 
-        // fugir: maximizar distância à polícia
+        // (maximizar distância à polícia)
         int bestNode = -1;
         float bestScore = -Float.POSITIVE_INFINITY;
 
@@ -128,7 +129,7 @@ public class CivilCar extends RoadAgent {
     }
 
 
-    // Verificar se há policia perto
+    // Verificar se há policia no raio de visão do civil
     private boolean hasPoliceInRadius(List<PoliceCar> polices, float radius) {
         if (polices == null || polices.isEmpty()) return false;
 
@@ -141,6 +142,7 @@ public class CivilCar extends RoadAgent {
         return false;
     }
 
+    // Devolve o policia mais proximo
     private PoliceCar getNearestPolice(List<PoliceCar> polices) {
         if (polices == null || polices.isEmpty()) return null;
 
