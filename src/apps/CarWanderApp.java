@@ -134,10 +134,7 @@ public class CarWanderApp implements IProcessingApp {
 
             // Desenhar carro
             PVector cp = car.getPos();
-            float[] cpx = plt.getPixelCoord(cp.x, cp.y);
-            p.noStroke();
-            p.fill(0, 0, 255);
-            p.circle(cpx[0], cpx[1], 12);
+
 
             car.display(p, plt);
 
