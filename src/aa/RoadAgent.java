@@ -4,6 +4,7 @@ import car.CivilCar;
 import car.PoliceCar;
 import city.Node;
 import city.RoadNetwork;
+import physics.ParticleSystem;
 import processing.core.PApplet;
 import processing.core.PVector;
 import tools.SubPlot;
@@ -34,6 +35,14 @@ public abstract class RoadAgent extends Boid {
 
     protected float stopTimer = 0f;
 
+    // particles
+    protected ParticleSystem driftParticles;
+    protected boolean driftEnabled = false;
+
+    // deteção de derrapagem
+    protected PVector prevVel;
+    protected float driftAngleTR = PApplet.radians(5);
+
     public RoadAgent(RoadNetwork net, int startNodeId, int color, float radiusWorld, PApplet p, SubPlot plt) {
         super(
                 net.nodes.get(startNodeId).pos.copy(),
@@ -54,6 +63,20 @@ public abstract class RoadAgent extends Boid {
         // escolher o 1o destino
         this.nextNodeId = startNodeId;
         chooseNextNode();
+
+        prevVel = getVel().copy();
+
+        driftParticles = new ParticleSystem(
+                getPos().copy(),
+                new PVector(0, 0),
+                1f,
+                0.02f,
+                p.color(120),
+                0.4f,
+                new PVector(0.06f, 0.10f)
+        );
+        driftParticles.setEmitting(false);
+
     }
 
     public void setSpeed(float s) {
@@ -77,6 +100,12 @@ public abstract class RoadAgent extends Boid {
             stopTimer -= dt;
             if (stopTimer < 0f) stopTimer = 0f;
             setVel(new PVector(0, 0));
+
+            // particulas nao param quando o carro para
+            if (driftParticles != null) {
+                driftParticles.setEmitting(false);
+                driftParticles.move(dt);
+            }
             return;
         }
 
@@ -89,6 +118,32 @@ public abstract class RoadAgent extends Boid {
 
         // mover
         move(dt);
+
+        // derrapagem
+        if (driftParticles != null) {
+
+            PVector v = getVel().copy();
+            boolean drifting = false;
+
+            if (driftEnabled) {
+                if (v.mag() > 1e-4f && prevVel.mag() > 1e-4f) {
+                    float angle = PVector.angleBetween(prevVel, v);
+                    drifting = angle > driftAngleTR;
+                }
+
+                if (v.mag() > 1e-4f) {
+                    PVector backDir = v.copy().normalize().mult(-1);
+                    PVector emitterPos = PVector.add(getPos(), backDir.copy().mult(radius * 1.1f));
+                    driftParticles.setPos(emitterPos);
+                    driftParticles.setEmitDir(backDir);
+                }
+            }
+
+            driftParticles.setEmitting(drifting);
+            driftParticles.move(dt);
+            prevVel = v.copy();
+        }
+
 
         // força adicional para o segmento da estrada
         PVector snapped = closestPointOnSegment(getPos(), a.pos, b.pos);
@@ -104,6 +159,13 @@ public abstract class RoadAgent extends Boid {
             chooseNextNode(civils, polices);
         }
     }
+
+    @Override
+    public void display(PApplet p, SubPlot plt) {
+        if (driftParticles != null) driftParticles.display(p, plt);
+        super.display(p, plt);
+    }
+
 
     // default (patrulhamento aleatorio)
     protected void chooseNextNode() {
@@ -174,4 +236,13 @@ public abstract class RoadAgent extends Boid {
 
         return PVector.add(a, PVector.mult(ab, t));
     }
+
+    // Função para ativar ou desativar a derrapagem
+    public void setDriftEnabled(boolean enabled) {
+        this.driftEnabled = enabled;
+        if (!enabled && driftParticles != null) {
+            driftParticles.setEmitting(false);
+        }
+    }
+
 }
