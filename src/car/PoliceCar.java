@@ -53,7 +53,9 @@ public class PoliceCar extends RoadAgent {
         pursuing = (currentTarget != null);
 
         // ajusta velocidade conforme o estado
-        this.speed = pursuing ? pursuingSpeed : normalSpeed;
+        setSpeed(pursuing ? pursuingSpeed : normalSpeed);
+
+        setDriftEnabled(pursuing);
 
 
         // sirene só em perseguição

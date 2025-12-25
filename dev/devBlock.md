@@ -4,10 +4,14 @@
 
   > [X] Eliminar parte do circulo em azul do CarWanderApp e verificar se tenho na nova classe para eliminar tambem
 
-  > [ ] Adicionar sistema de particulas aos carros civis [ILEGAL] quando detetam a policia e alterão a sua cor para laranja.
+  > [ ] Adicionar sistema de particulas aos carros civis [ILEGAL] quando detetam a policia e alterão a sua cor para laranja. Report
 
   > [ ] Ver videos para tentar encontra algo que falte.
   
   > [ ] Criar graficos de estatisticas.
 
-  > [ ] Criar interface inicial com texto apelativo- 
+  > [ ] Criar interface inicial com texto apelativo
+   
+  > [ ] Terminar Relatorio
+
+  > [ ] Fazer Powerpoint teorico completo da disciplina incluindo os trabalho e projeto final
