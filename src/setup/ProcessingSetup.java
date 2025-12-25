@@ -23,10 +23,7 @@ public class ProcessingSetup extends PApplet {
 
     @Override
     public void settings() {
-        // Definir o lado do quadrado baseado no menor valor entre a largura e a altura do ecrã
-        int lado = Math.min(displayWidth, displayHeight);
-        lado = Math.max(200, lado);
-        size(lado-80, lado-80);
+        size(750, 750);
     }
 
     @Override

@@ -10,7 +10,7 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
 import tools.SubPlot;
-import car.RoadCar;
+import aa.WanderAgent;
 
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class CarWanderApp implements IProcessingApp {
     private float angle = (float)(Math.PI / 2);
     private int nGenerations = 4;
 
-    private RoadCar car;
+    private WanderAgent car;
 
     private double[] fullWindow;
     private float zoomFactor = 0.25f; // zoom
@@ -75,13 +75,13 @@ public class CarWanderApp implements IProcessingApp {
         if (!built) {
             roads.clear();
 
-            // 1ª turtle
+            // 1a turtle
             p.pushMatrix();
             turtle1.setPose(origin1, 0f, p, plt);
             turtle1.render(lsys, p, plt);
             p.popMatrix();
 
-            // 2ª turle
+            // 2a turle
             p.pushMatrix();
             turtle2.setPose(origin2, (float)(Math.PI / 2), p, plt);
             turtle2.render(lsys, p, plt);
@@ -89,7 +89,7 @@ public class CarWanderApp implements IProcessingApp {
 
             net.buildFromSegments(roads);
 
-            fitWindowToNetwork(p, 0.08f); // 8% margem
+            fitWindowToNetwork(p, 0.08f); // margem
 
             float minX=1e9f, maxX=-1e9f, minY=1e9f, maxY=-1e9f;
             for (Node n : net.nodes) {
@@ -98,12 +98,12 @@ public class CarWanderApp implements IProcessingApp {
                 minY = Math.min(minY, n.pos.y);
                 maxY = Math.max(maxY, n.pos.y);
             }
-            System.out.println("Node bounds: x[" + minX + "," + maxX + "] y[" + minY + "," + maxY + "]");
+            System.out.println("x[" + minX + "," + maxX + "] y[" + minY + "," + maxY + "]");
 
 
             // Criar o carro
             int start = (int) p.random(net.nodes.size());
-            car = new RoadCar(net, start, p.color(0, 80, 255), p, plt);
+            car = new WanderAgent(net, start, p.color(0, 80, 255), p, plt);
 
 
             System.out.println("Segmentos: " + roads.size() + " Nós: " + net.nodes.size());
