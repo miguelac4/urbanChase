@@ -14,10 +14,11 @@ public class ProcessingSetup extends PApplet {
         - CityFractalApp()
         - RoadNodesApp()
         - CarWanderApp()
+        - ParticleWanderApp()
         - AgentsApp()
 
         */
-        app = new AgentsApp();
+        app = new ParticleWanderApp();
         PApplet.main(ProcessingSetup.class.getName());
     }
 
