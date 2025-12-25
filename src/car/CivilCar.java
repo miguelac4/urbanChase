@@ -96,6 +96,9 @@ public class CivilCar extends RoadAgent {
             }
         }
 
+        // derrapar sempre que o estado é ilegal
+        setDriftEnabled(state == CivilState.ILEGAL);
+
         // movimento normal na rede
         super.update(dt, civils, polices);
     }

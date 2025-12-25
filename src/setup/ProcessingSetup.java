@@ -18,7 +18,7 @@ public class ProcessingSetup extends PApplet {
         - AgentsApp()
 
         */
-        app = new ParticleWanderApp();
+        app = new AgentsApp();
         PApplet.main(ProcessingSetup.class.getName());
     }
 
