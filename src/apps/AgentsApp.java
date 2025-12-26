@@ -49,6 +49,12 @@ public class AgentsApp implements IProcessingApp {
     private double[] fullWindow;
     private float zoomFactor = 0.25f; // zoom
 
+    // Estatisticas
+    private boolean showStats = false;
+    private float statsTimer = 0f;
+    private float statsEvery = 0.5f; // imprimir x vezes por segundo
+    private int statsNum = 0; // numero da estatistica
+
     @Override
     public void setup(PApplet p) {
         plt = new SubPlot(window, viewport, p.width, p.height);
@@ -167,10 +173,48 @@ public class AgentsApp implements IProcessingApp {
             pc.display(p, plt);
         }
 
+        // ESTATISTICAS (prints)
+        if (showStats) {
+
+            statsTimer += dt;
+            if (statsTimer >= statsEvery) {
+                statsTimer -= statsEvery;
+                statsNum++;
+
+                int civLegal = 0;
+                int civIlegal = 0;
+                int polNormal = 0;
+                int pursuing = 0;
+
+                for (CivilCar c : civils) {
+                    if (c.state == CivilCar.CivilState.LEGAL) civLegal++;
+                    else civIlegal++;
+                }
+
+                for (PoliceCar pc : polices) {
+                    if (pc.isPursuing()) pursuing++;
+                    else polNormal++;
+                }
+
+                System.out.println(
+                        "[STATS " + statsNum + "] " +
+                                "Civis LEGAL=" + civLegal +
+                                " | Civis ILEGAL=" + civIlegal +
+                                " | Policias NORMAL=" + polNormal +
+                                " | Perseguicoes=" + pursuing
+                );
+            }
+        }
 
     }
 
-    @Override public void keyPressed(PApplet p) {}
+    @Override public void keyPressed(PApplet p) {
+        if (p.key == 's' || p.key == 'S') {
+            showStats = !showStats;
+            System.out.println("Stats: " + (showStats ? "ON" : "OFF"));
+        }
+    }
+
     @Override public void keyReleased(PApplet p) {}
     @Override
     public void mousePressed(PApplet p) {
