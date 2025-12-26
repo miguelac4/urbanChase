@@ -11,6 +11,7 @@ import fractals.Rule;
 import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
+import tools.StatsPanel;
 import tools.SubPlot;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class AgentsApp implements IProcessingApp {
     private float statsTimer = 0f;
     private float statsEvery = 0.5f; // imprimir x vezes por segundo
     private int statsNum = 0; // numero da estatistica
+    private StatsPanel statsPanel;
 
     @Override
     public void setup(PApplet p) {
@@ -82,6 +84,8 @@ public class AgentsApp implements IProcessingApp {
 
         civils = new ArrayList<>();
         polices = new ArrayList<>();
+
+        statsPanel = new StatsPanel(300);
     }
 
     @Override
@@ -174,36 +178,45 @@ public class AgentsApp implements IProcessingApp {
         }
 
         // ESTATISTICAS (prints)
-        if (showStats) {
+        statsTimer += dt;
+        if (statsTimer >= statsEvery) {
+            statsTimer -= statsEvery;
+            statsNum++;
 
-            statsTimer += dt;
-            if (statsTimer >= statsEvery) {
-                statsTimer -= statsEvery;
-                statsNum++;
+            int civLegal = 0;
+            int civIlegal = 0;
+            int polNormal = 0;
+            int pursuing = 0;
 
-                int civLegal = 0;
-                int civIlegal = 0;
-                int polNormal = 0;
-                int pursuing = 0;
-
-                for (CivilCar c : civils) {
-                    if (c.state == CivilCar.CivilState.LEGAL) civLegal++;
-                    else civIlegal++;
-                }
-
-                for (PoliceCar pc : polices) {
-                    if (pc.isPursuing()) pursuing++;
-                    else polNormal++;
-                }
-
-                System.out.println(
-                        "[STATS " + statsNum + "] " +
-                                "Civis LEGAL=" + civLegal +
-                                " | Civis ILEGAL=" + civIlegal +
-                                " | Policias NORMAL=" + polNormal +
-                                " | Perseguicoes=" + pursuing
-                );
+            for (CivilCar c : civils) {
+                if (c.state == CivilCar.CivilState.LEGAL) civLegal++;
+                else civIlegal++;
             }
+
+            for (PoliceCar pc : polices) {
+                if (pc.isPursuing()) pursuing++;
+                else polNormal++;
+            }
+
+            System.out.println(
+                    "[STATS " + statsNum + "] " +
+                            "Civis LEGAL=" + civLegal +
+                            " | Civis ILEGAL=" + civIlegal +
+                            " | Policias NORMAL=" + polNormal +
+                            " | Perseguicoes=" + pursuing
+            );
+            statsPanel.push(civLegal, civIlegal, polNormal, pursuing);
+        }
+
+        // apenas mostrar o painel se o showStats tiver ativo
+        if (showStats) {
+            int panelW = 320;
+            int panelX = p.width - panelW;
+            int panelY = 0;
+            int panelH = p.height;
+
+            // desenhar painel
+            statsPanel.draw(p, panelX, panelY, panelW, panelH);
         }
 
     }
