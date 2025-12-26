@@ -11,6 +11,7 @@ import fractals.Rule;
 import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
+import tools.StatsPanel;
 import tools.SubPlot;
 
 import java.util.ArrayList;
@@ -49,6 +50,13 @@ public class AgentsApp implements IProcessingApp {
     private double[] fullWindow;
     private float zoomFactor = 0.25f; // zoom
 
+    // Estatisticas
+    private boolean showStats = false;
+    private float statsTimer = 0f;
+    private float statsEvery = 0.5f; // imprimir x vezes por segundo
+    private int statsNum = 0; // numero da estatistica
+    private StatsPanel statsPanel;
+
     @Override
     public void setup(PApplet p) {
         plt = new SubPlot(window, viewport, p.width, p.height);
@@ -76,6 +84,8 @@ public class AgentsApp implements IProcessingApp {
 
         civils = new ArrayList<>();
         polices = new ArrayList<>();
+
+        statsPanel = new StatsPanel(300);
     }
 
     @Override
@@ -167,10 +177,57 @@ public class AgentsApp implements IProcessingApp {
             pc.display(p, plt);
         }
 
+        // ESTATISTICAS (prints)
+        statsTimer += dt;
+        if (statsTimer >= statsEvery) {
+            statsTimer -= statsEvery;
+            statsNum++;
+
+            int civLegal = 0;
+            int civIlegal = 0;
+            int polNormal = 0;
+            int pursuing = 0;
+
+            for (CivilCar c : civils) {
+                if (c.state == CivilCar.CivilState.LEGAL) civLegal++;
+                else civIlegal++;
+            }
+
+            for (PoliceCar pc : polices) {
+                if (pc.isPursuing()) pursuing++;
+                else polNormal++;
+            }
+
+            System.out.println(
+                    "[STATS " + statsNum + "] " +
+                            "Civis LEGAL=" + civLegal +
+                            " | Civis ILEGAL=" + civIlegal +
+                            " | Policias NORMAL=" + polNormal +
+                            " | Perseguicoes=" + pursuing
+            );
+            statsPanel.push(civLegal, civIlegal, polNormal, pursuing);
+        }
+
+        // apenas mostrar o painel se o showStats tiver ativo
+        if (showStats) {
+            int panelW = 320;
+            int panelX = p.width - panelW;
+            int panelY = 0;
+            int panelH = p.height;
+
+            // desenhar painel
+            statsPanel.draw(p, panelX, panelY, panelW, panelH);
+        }
 
     }
 
-    @Override public void keyPressed(PApplet p) {}
+    @Override public void keyPressed(PApplet p) {
+        if (p.key == 's' || p.key == 'S') {
+            showStats = !showStats;
+            System.out.println("Stats: " + (showStats ? "ON" : "OFF"));
+        }
+    }
+
     @Override public void keyReleased(PApplet p) {}
     @Override
     public void mousePressed(PApplet p) {

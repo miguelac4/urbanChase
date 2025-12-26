@@ -11,11 +11,11 @@ public class ProcessingSetup extends PApplet {
         /*
 
         Definir aplicação para correr:
-        - CityFractalApp()
-        - RoadNodesApp()
-        - CarWanderApp()
-        - ParticleWanderApp()
-        - AgentsApp()
+        - CityFractalApp() - Fractais
+        - RoadNodesApp() - Nós de navegação
+        - CarWanderApp() - Simple Boid
+        - ParticleWanderApp() - Particle System
+        - AgentsApp() - Complex Boids with Behaviors
 
         */
         app = new AgentsApp();
