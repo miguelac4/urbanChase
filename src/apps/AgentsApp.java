@@ -43,8 +43,9 @@ public class AgentsApp implements IProcessingApp {
     private ArrayList<CivilCar> civils;
     private ArrayList<PoliceCar> polices;
 
-    private int numCivils = 20;
-    private int numPolices = 5;
+    private int numCivils;
+    private int numPolices;
+    private float chanceIllegalPerSecond;
 
     private int captures = 0; // opcional (vamos usar já)
 
@@ -62,6 +63,12 @@ public class AgentsApp implements IProcessingApp {
     private enum GameState { MENU, RUNNING }
     private GameState gameState = GameState.MENU;
     private MenuScreen menu;
+
+    // botão voltar ao menu
+    private float btnMenuX = 12;
+    private float btnMenuY = 12;
+    private float btnMenuW = 110;
+    private float btnMenuH = 32;
 
     @Override
     public void setup(PApplet p) {
@@ -140,7 +147,7 @@ public class AgentsApp implements IProcessingApp {
             // civis
             for (int i = 0; i < numCivils; i++) {
                 int start = (int) p.random(net.nodes.size());
-                CivilCar c = new CivilCar(net, start, p.color(0, 200, 0), p, plt);
+                CivilCar c = new CivilCar(net, start, p.color(0, 200, 0), chanceIllegalPerSecond, p, plt);
                 // opcional: genes básicos
                 civils.add(c);
             }
@@ -233,10 +240,20 @@ public class AgentsApp implements IProcessingApp {
             statsPanel.draw(p, panelX, panelY, panelW, panelH);
         }
 
+        drawMenuButton(p);
+
     }
 
     @Override public void keyPressed(PApplet p) {
         if (gameState == GameState.MENU && (p.keyCode == PApplet.ENTER)) {
+
+            // ir buscar as configuração escolhidas
+            numCivils = menu.getNumCivils();
+            numPolices = menu.getNumPolices();
+            chanceIllegalPerSecond = menu.getChanceIllegalPerSecond();
+
+            // forçar rebuild com novos valores
+            built = false;
             gameState = GameState.RUNNING;
         }
 
@@ -249,6 +266,22 @@ public class AgentsApp implements IProcessingApp {
     @Override public void keyReleased(PApplet p) {}
     @Override
     public void mousePressed(PApplet p) {
+        if (gameState == GameState.MENU) {
+            menu.mousePressed(p);
+            return;
+        }
+
+        // voltar ao menu
+        if (gameState == GameState.RUNNING &&
+                p.mouseX >= btnMenuX && p.mouseX <= btnMenuX + btnMenuW &&
+                p.mouseY >= btnMenuY && p.mouseY <= btnMenuY + btnMenuH) {
+
+            gameState = GameState.MENU;
+            built = false;        // forçar rebuild
+            showStats = false;
+            return;
+        }
+
         if (!built || plt == null || fullWindow == null) return;
 
         // Clique direito (afastar)
@@ -307,5 +340,22 @@ public class AgentsApp implements IProcessingApp {
 
         plt = new SubPlot(window, viewport, p.width, p.height);
     }
+
+    private void drawMenuButton(PApplet p) {
+        boolean hover =
+                p.mouseX >= btnMenuX && p.mouseX <= btnMenuX + btnMenuW &&
+                        p.mouseY >= btnMenuY && p.mouseY <= btnMenuY + btnMenuH;
+
+        p.stroke(hover ? 255 : 180);
+        p.strokeWeight(2);
+        p.fill(hover ? 245 : 225);
+        p.rect(btnMenuX, btnMenuY, btnMenuW, btnMenuH, 8);
+
+        p.fill(0);
+        p.textAlign(PApplet.CENTER, PApplet.CENTER);
+        p.textSize(14);
+        p.text("Menu", btnMenuX + btnMenuW / 2f, btnMenuY + btnMenuH / 2f);
+    }
+
 
 }
