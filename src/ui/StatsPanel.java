@@ -1,4 +1,4 @@
-package tools;
+package ui;
 
 import processing.core.PApplet;
 
