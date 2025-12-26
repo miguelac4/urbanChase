@@ -11,7 +11,8 @@ import fractals.Rule;
 import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
-import tools.StatsPanel;
+import ui.MenuScreen;
+import ui.StatsPanel;
 import tools.SubPlot;
 
 import java.util.ArrayList;
@@ -57,6 +58,11 @@ public class AgentsApp implements IProcessingApp {
     private int statsNum = 0; // numero da estatistica
     private StatsPanel statsPanel;
 
+    // Menu inicial
+    private enum GameState { MENU, RUNNING }
+    private GameState gameState = GameState.MENU;
+    private MenuScreen menu;
+
     @Override
     public void setup(PApplet p) {
         plt = new SubPlot(window, viewport, p.width, p.height);
@@ -86,10 +92,18 @@ public class AgentsApp implements IProcessingApp {
         polices = new ArrayList<>();
 
         statsPanel = new StatsPanel(300);
+
+        menu = new MenuScreen();
     }
 
     @Override
     public void draw(PApplet p, float dt) {
+        if (gameState == GameState.MENU) {
+            menu.update(dt);
+            menu.draw(p);
+            return;
+        }
+
         // construir uma vez
         if (!built) {
             roads.clear();
@@ -222,6 +236,10 @@ public class AgentsApp implements IProcessingApp {
     }
 
     @Override public void keyPressed(PApplet p) {
+        if (gameState == GameState.MENU && (p.keyCode == PApplet.ENTER)) {
+            gameState = GameState.RUNNING;
+        }
+
         if (p.key == 's' || p.key == 'S') {
             showStats = !showStats;
             System.out.println("Stats: " + (showStats ? "ON" : "OFF"));

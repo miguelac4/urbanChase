@@ -8,7 +8,7 @@
 
   > [X] Ver videos para tentar encontra algo que falte.
   
-  > [ ] Criar graficos de estatisticas.
+  > [X] Criar graficos de estatisticas.
 
   > [ ] Criar interface inicial com texto apelativo c/ incialização do mundo (num de policias e num de civis)
    
