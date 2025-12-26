@@ -26,15 +26,16 @@ public class CivilCar extends RoadAgent {
     private final float speedIlegal = 2.2f;
 
     private final Random r = new Random();
-    public float chanceIllegalPerSecond = 0.03f;
+    public float chanceIllegalPerSecond;
 
     // Ilegal durante x segundos
     private float illegalTimer = 0f;        // currentTime
     private float illegalDuration = 0f;     // random (60..90)
     private boolean revertPending = false;  // duracao acabou mas encontra-se em fuga
 
-    public CivilCar(RoadNetwork net, int startNodeId, int color, PApplet p, SubPlot plt) {
+    public CivilCar(RoadNetwork net, int startNodeId, int color, float chanceIllegalPerSecond, PApplet p, SubPlot plt) {
         super(net, startNodeId, color, 0.11f, p, plt);
+        this.chanceIllegalPerSecond = chanceIllegalPerSecond;
 
         colorLegal = p.color(0, 200, 0);      // verde
         colorIlegal = p.color(240, 200, 0);   // amarelo
