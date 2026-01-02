@@ -13,7 +13,6 @@ public abstract class BoidWanderApp implements IProcessingApp {
     private double[] window = {-10, 10, -10, 10};
     private float[] viewport = {0, 0, 1, 1};
     private SubPlot plt;
-    private DNA dna;
     private float[] maxSpeed = {4, 4};
     private PVector target;
     private float wanderAngle = 0f;
@@ -35,11 +34,10 @@ public abstract class BoidWanderApp implements IProcessingApp {
     @Override
     public void setup(PApplet parent) {
         plt = new SubPlot(window, viewport, parent.width, parent.height);
-        dna = new DNA(maxSpeed);
         baseColor  = parent.color(0);
         fasterColor = parent.color(255, 0, 0);
         slowerColor = parent.color(0, 255, 0);
-        b = new Boid(new PVector(), new PVector(), 1, 0.5f, baseColor, dna, parent, plt);
+        b = new Boid(new PVector(), new PVector(), 1, 0.5f, baseColor, parent, plt);
         target = new PVector();
 
         System.out.println(
