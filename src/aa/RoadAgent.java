@@ -50,7 +50,6 @@ public abstract class RoadAgent extends Boid {
                 1f,
                 radiusWorld,
                 color,
-                new DNA(new float[]{4f, 4f}),
                 p,
                 plt
         );

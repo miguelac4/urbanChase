@@ -15,7 +15,7 @@ public class Boid extends Body {
     boolean isStopped = false;
     private int col;  // cor atual do boid
 
-    protected Boid(PVector pos, PVector vel, float mass, float radius, int color, DNA dna, PApplet p, SubPlot plt) {
+    protected Boid(PVector pos, PVector vel, float mass, float radius, int color, PApplet p, SubPlot plt) {
         super(pos, vel, mass, radius, color);
         this.plt = plt;
         this.col = color;

@@ -34,7 +34,6 @@ public class WanderAgent extends Boid {
                 1f,
                 0.08f,
                 color,
-                new DNA(new float[]{4f, 4f}),
                 p,
                 plt
         );
