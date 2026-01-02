@@ -1,7 +1,5 @@
 package apps;
 
-import city.Node;
-import city.RoadSegment;
 import fractals.LSystem;
 import fractals.Rule;
 import fractals.Turtle;
@@ -9,8 +7,6 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import setup.IProcessingApp;
 import tools.SubPlot;
-
-import java.util.ArrayList;
 
 public class CityFractalApp implements IProcessingApp {
 
