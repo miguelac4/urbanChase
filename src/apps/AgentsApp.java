@@ -115,13 +115,13 @@ public class AgentsApp implements IProcessingApp {
         if (!built) {
             roads.clear();
 
-            // 1ª turtle
+            // 1a turtle
             p.pushMatrix();
             turtle1.setPose(origin1, 0f, p, plt);
             turtle1.render(lsys, p, plt);
             p.popMatrix();
 
-            // 2ª turle
+            // 2a turle
             p.pushMatrix();
             turtle2.setPose(origin2, (float)(Math.PI / 2), p, plt);
             turtle2.render(lsys, p, plt);
